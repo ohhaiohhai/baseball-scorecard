@@ -65,7 +65,7 @@ function isLineupSpot(n: number): n is PlateAppearance["lineupSpot"] {
   return Number.isInteger(n) && n >= 1 && n <= 9;
 }
 
-function isValidBaseNumber(n: number): n is number {
+function isValidBaseNumber(n: number): n is NonNullable<PlateAppearance["basesReached"]> {
   return Number.isInteger(n) && n >= 0 && n <= 4;
 }
 

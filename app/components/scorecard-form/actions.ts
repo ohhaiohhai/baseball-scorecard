@@ -11,9 +11,9 @@ import { markBaseReached as markBaseReachedInGame } from "@/lib/games";
  */
 export async function markBaseReached(
   gameId: string,
-  _formData?: FormData
+  _formData: FormData
 ) {
-  const side = _formData?.get("side");
+  const side = _formData.get("side");
 
   await markBaseReachedInGame(gameId, _formData);
   revalidatePath(`/game/${gameId}`);
