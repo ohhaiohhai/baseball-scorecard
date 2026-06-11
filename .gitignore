@@ -21,6 +21,8 @@ yarn-error.log*
 
 # env files
 .env*.local
+# written by the Amplify build (amplify.yml) to expose env vars to the SSR runtime
+.env.production
 
 # typescript
 *.tsbuildinfo

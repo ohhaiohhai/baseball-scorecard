@@ -6,6 +6,11 @@ frontend:
         - npm ci
     build:
       commands:
+        # Amplify exposes console env vars at BUILD time only. Next.js SSR reads
+        # process.env at REQUEST time, so bake the server-side vars into
+        # .env.production for `next build` to pick up. (Server-only — not
+        # NEXT_PUBLIC_, so the key is never shipped to the browser.)
+        - env | grep -e ANTHROPIC_API_KEY -e USE_LAMBDA -e DYNAMO_REGION -e DYNAMO_GAMES_TABLE_NAME -e RESEARCH_LINEUPS_FUNCTION_NAME >> .env.production || true
         - npm run build
   artifacts:
     baseDirectory: .next
