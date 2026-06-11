@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AutofillStatus from "@/app/components/autofill-status";
 import Scoreboard from "@/app/components/scoreboard";
 import { getGame } from "@/lib/games";
 
@@ -28,6 +29,14 @@ export default async function GamePage({
       <p className="muted mono">
         {game.date} · {game.status}
       </p>
+
+      {game.autofillStatus && game.autofillStatus !== "done" && (
+        <AutofillStatus
+          gameId={game.id}
+          initialStatus={game.autofillStatus}
+          initialError={game.autofillError}
+        />
+      )}
 
       <Scoreboard game={game} />
     </main>

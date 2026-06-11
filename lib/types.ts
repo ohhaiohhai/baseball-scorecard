@@ -121,6 +121,9 @@ export interface Inning {
 
 export type GameStatus = "scheduled" | "in_progress" | "final";
 
+/** Lifecycle of the optional AI roster pre-fill (see lib/autofill.ts). */
+export type AutofillStatus = "processing" | "done" | "error";
+
 export interface Game {
   id: string;
   /** ISO-8601 date of the game. */
@@ -130,6 +133,14 @@ export interface Game {
   away: TeamLineup;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Set only when a game was created with AI roster autofill. The rosters are
+   * filled in asynchronously by the research-lineups Lambda; the client polls
+   * this field. Absent on blank games.
+   */
+  autofillStatus?: AutofillStatus;
+  /** Human-readable failure reason when `autofillStatus === "error"`. */
+  autofillError?: string;
 }
 
 /** Shape accepted when creating a new game. */

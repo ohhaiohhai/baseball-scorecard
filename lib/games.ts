@@ -169,11 +169,14 @@ export async function putGame(game: Game): Promise<Game> {
 
 /**
  * Build and persist a fresh game. Pass `lineups` to seed the batting orders
- * (e.g. from AI research); omit for empty lineups.
+ * (e.g. from AI research); omit for empty lineups. Pass
+ * `autofillStatus: "processing"` when the rosters will be filled in
+ * asynchronously by the research-lineups Lambda (see lib/autofill.ts).
  */
 export async function createGame(
   input: NewGameInput,
-  lineups?: { home: Player[]; away: Player[] }
+  lineups?: { home: Player[]; away: Player[] },
+  opts?: { autofillStatus?: Game["autofillStatus"] }
 ): Promise<Game> {
   const now = new Date().toISOString();
   const game: Game = {
@@ -184,6 +187,7 @@ export async function createGame(
     away: { name: input.awayTeam, players: lineups?.away ?? [], innings: [] },
     createdAt: now,
     updatedAt: now,
+    ...(opts?.autofillStatus ? { autofillStatus: opts.autofillStatus } : {}),
   };
   return putGame(game);
 }

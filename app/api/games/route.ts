@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { aiConfigured, researchLineups } from "@/lib/anthropic";
-import { createGame, listGames } from "@/lib/games";
+import { aiConfigured } from "@/lib/anthropic";
+import { triggerAutofill } from "@/lib/autofill";
+import { createGame, listGames, putGame } from "@/lib/games";
 import type { NewGameInput } from "@/lib/types";
-
-// Web search + two model calls can take a while.
-export const maxDuration = 60;
 
 export async function GET() {
   const games = await listGames();
@@ -29,26 +27,33 @@ export async function POST(request: Request) {
     awayTeam: body.awayTeam,
   };
 
-  // Optional: use AI + web search to pre-populate rosters. On any failure we
-  // fall back to an empty scorecard rather than blocking game creation.
+  // Optional: pre-populate rosters with AI + web search. The work is offloaded
+  // (a dedicated Lambda in prod, inline in dev) and the rosters are filled in
+  // asynchronously — we create the game immediately as "processing" and return
+  // it now; the client polls the game until autofill finishes (or errors).
   console.log(
     `[ai] autofill requested=${Boolean(body.autofill)} aiConfigured=${aiConfigured()}`
   );
   if (body.autofill && aiConfigured()) {
+    const game = await createGame(input, undefined, {
+      autofillStatus: "processing",
+    });
     try {
-      const rosters = await researchLineups({
+      await triggerAutofill({
+        gameId: game.id,
         awayLabel: input.awayTeam,
         homeLabel: input.homeTeam,
         date: input.date,
       });
-      const game = await createGame(input, {
-        home: rosters.home,
-        away: rosters.away,
-      });
-      return NextResponse.json(game, { status: 201 });
     } catch (e) {
-      console.error("[ai] Roster autofill failed; creating empty game:", e);
+      // Couldn't even dispatch the work — surface it on the record so the
+      // client stops waiting rather than polling forever.
+      console.error("[ai] Failed to trigger roster autofill:", e);
+      game.autofillStatus = "error";
+      game.autofillError = "Could not start roster research.";
+      await putGame(game);
     }
+    return NextResponse.json(game, { status: 201 });
   }
 
   const game = await createGame(input);
