@@ -1,0 +1,8 @@
+// =============================================================================
+// Design-system entry point for component stylesheets.
+// `@use "…/design" as *;` brings every token and mixin into scope.
+// (Does not emit any CSS — safe to @use from many CSS Modules.)
+// =============================================================================
+
+@forward "tokens";
+@forward "mixins";

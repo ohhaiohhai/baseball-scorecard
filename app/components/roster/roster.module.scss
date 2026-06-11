@@ -1,0 +1,10 @@
+@use "../../../styles/design" as *;
+
+.roster {
+  margin: 0 $space-4 0 0;
+  width: 200px;
+
+  &-row {
+    margin: $space-5 0;
+  }
+}

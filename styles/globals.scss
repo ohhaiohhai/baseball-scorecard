@@ -1,0 +1,66 @@
+// =============================================================================
+// Global stylesheet — imported once in app/layout.tsx.
+// Composes the design system and exposes a few global utility classes.
+// =============================================================================
+
+@use "design" as *;
+@use "base";
+
+// Layout primitives ---------------------------------------------------------
+.container {
+  width: 100%;
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: 0 $space-4;
+}
+
+.page {
+  @include stack($space-6);
+  padding-block: $space-6;
+}
+
+// Buttons --------------------------------------------------------------------
+.btn {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border: $border-width solid $color-line;
+  border-radius: $radius-md;
+  background: $color-surface;
+  color: $color-ink;
+  font-weight: $weight-medium;
+  transition: background $transition-base, border-color $transition-base;
+
+  &:hover {
+    background: $color-surface-alt;
+    text-decoration: none;
+  }
+}
+
+.btn--primary {
+  background: $color-accent;
+  border-color: $color-accent;
+  color: #fff;
+
+  &:hover {
+    background: $color-accent-dark;
+    border-color: $color-accent-dark;
+  }
+}
+
+// Surface --------------------------------------------------------------------
+.card {
+  @include card;
+  padding: $space-5;
+}
+
+// Text utilities -------------------------------------------------------------
+.muted {
+  color: $color-muted;
+}
+
+.mono {
+  font-family: $font-mono;
+}

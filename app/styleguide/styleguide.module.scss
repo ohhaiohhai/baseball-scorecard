@@ -1,0 +1,212 @@
+@use "../../styles/design" as *;
+
+// =============================================================================
+// Style guide page. Swatches/specimens are generated from the design tokens
+// via Sass maps so this page can't drift from the real system.
+// =============================================================================
+
+.section {
+  @include stack($space-4);
+  padding-block: $space-6;
+  border-top: $border-width solid $color-line;
+
+  &:first-of-type {
+    border-top: 0;
+  }
+}
+
+.sectionTitle {
+  font-size: $text-2xl;
+  font-weight: $weight-bold;
+  line-height: $leading-tight;
+}
+
+.sectionNote {
+  color: $color-muted;
+  font-size: $text-sm;
+  margin-top: calc(-1 * #{$space-2});
+}
+
+// --- Color swatches ---------------------------------------------------------
+$swatches: (
+  // brand & field
+  "grass": $color-grass, "grass-dark": $color-grass-dark,
+  "dirt": $color-dirt, "chalk": $color-chalk,
+  // ink & surfaces
+  "ink": $color-ink, "ink-soft": $color-ink-soft, "muted": $color-muted,
+  "line": $color-line, "surface": $color-surface,
+  "surface-alt": $color-surface-alt, "bg": $color-bg,
+  // semantic
+  "accent": $color-accent, "accent-dark": $color-accent-dark,
+  "positive": $color-positive, "warning": $color-warning, "danger": $color-danger,
+);
+
+.swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: $space-4;
+}
+
+.swatch {
+  @include card;
+  overflow: hidden;
+}
+
+.swatchChip {
+  height: 72px;
+  border-bottom: $border-width solid $color-line;
+}
+
+.swatchMeta {
+  padding: $space-2 $space-3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.swatchName {
+  font-weight: $weight-medium;
+  font-size: $text-sm;
+}
+
+.swatchHex {
+  font-family: $font-mono;
+  font-size: $text-xs;
+  color: $color-muted;
+  text-transform: uppercase;
+}
+
+@each $name, $val in $swatches {
+  .chip-#{$name} {
+    background: $val;
+  }
+}
+
+// --- Typography -------------------------------------------------------------
+$type-scale: (
+  "3xl": $text-3xl, "2xl": $text-2xl, "xl": $text-xl,
+  "lg": $text-lg, "base": $text-base, "sm": $text-sm, "xs": $text-xs,
+);
+
+.typeRow {
+  @include flex-between;
+  gap: $space-4;
+  border-bottom: $border-width solid $color-line;
+  padding-block: $space-2;
+}
+
+.typeLabel {
+  font-family: $font-mono;
+  font-size: $text-xs;
+  color: $color-muted;
+  flex: none;
+}
+
+.typeSample {
+  @include truncate;
+  line-height: $leading-tight;
+}
+
+@each $name, $val in $type-scale {
+  .type-#{$name} {
+    font-size: $val;
+  }
+}
+
+.weights {
+  display: flex;
+  gap: $space-6;
+  flex-wrap: wrap;
+}
+
+.weightRegular { font-weight: $weight-regular; }
+.weightMedium  { font-weight: $weight-medium; }
+.weightBold    { font-weight: $weight-bold; }
+
+// --- Spacing ----------------------------------------------------------------
+$space-scale: (
+  "1": $space-1, "2": $space-2, "3": $space-3, "4": $space-4,
+  "5": $space-5, "6": $space-6, "8": $space-8, "10": $space-10,
+);
+
+.spaceRow {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.spaceLabel {
+  font-family: $font-mono;
+  font-size: $text-xs;
+  color: $color-muted;
+  width: 88px;
+  flex: none;
+}
+
+.spaceBar {
+  height: 16px;
+  background: $color-grass;
+  border-radius: $radius-sm;
+}
+
+@each $name, $val in $space-scale {
+  .bar-#{$name} {
+    width: $val;
+  }
+}
+
+// --- Radii ------------------------------------------------------------------
+$radii: (
+  "sm": $radius-sm, "md": $radius-md, "lg": $radius-lg, "pill": $radius-pill,
+);
+
+.tileGrid {
+  display: flex;
+  gap: $space-5;
+  flex-wrap: wrap;
+}
+
+.tile {
+  width: 96px;
+  height: 96px;
+  background: $color-surface-alt;
+  border: $border-width solid $color-line;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: $space-2;
+  font-family: $font-mono;
+  font-size: $text-xs;
+  color: $color-muted;
+}
+
+@each $name, $val in $radii {
+  .radius-#{$name} {
+    border-radius: $val;
+  }
+}
+
+// --- Shadows ----------------------------------------------------------------
+.shadowSm {
+  background: $color-surface;
+  box-shadow: $shadow-sm;
+}
+
+.shadowMd {
+  background: $color-surface;
+  box-shadow: $shadow-md;
+}
+
+// --- Component demos --------------------------------------------------------
+.row {
+  display: flex;
+  gap: $space-4;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.cardDemoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: $space-4;
+}

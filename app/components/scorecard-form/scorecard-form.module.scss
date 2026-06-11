@@ -1,0 +1,108 @@
+@use "../../../styles/design" as *;
+
+.scorecard-form {
+  display: flex;
+  gap: $space-6;
+  position: relative;
+
+  &__hit {
+    label {
+      display: block;
+      margin: $space-3 0;
+    }
+  }
+
+  &__diamond-container {
+    position: relative;
+  }
+
+  &__result {
+    position: absolute;
+    top: 55px;
+    left: 55px;
+  }
+
+  &__diamond {
+    border: 1px solid black;
+    height: 100px;
+    margin: $space-5;
+    transform: rotate(45deg);
+    width: 100px;
+    
+
+    &.bases-reached-1 {
+      border-right: 4px solid $color-accent;
+    }
+    &.bases-reached-2 {
+      border-right: 4px solid $color-accent;
+      border-top: 4px solid $color-accent;
+    }
+    &.bases-reached-3 {
+      border-right: 4px solid $color-accent;
+      border-top: 4px solid $color-accent;
+      border-left: 4px solid $color-accent;
+    }
+    &.bases-reached-4 {
+      border: 4px solid $color-accent;
+    }
+
+    // Light up each path segment cumulatively based on the base reached.
+    // The :has() check sits on the diamond (the common ancestor of all four
+    // radios); from there each segment is selected as a descendant. Only one
+    // radio is ever checked, so reaching 3rd also lights segments 1 and 2.
+    &:has([value="1"]:checked) .scorecard-form__diamond-base-line-1,
+    &:has([value="2"]:checked) .scorecard-form__diamond-base-line-1,
+    &:has([value="3"]:checked) .scorecard-form__diamond-base-line-1,
+    &:has([value="4"]:checked) .scorecard-form__diamond-base-line-1,
+    &:has([value="2"]:checked) .scorecard-form__diamond-base-line-2,
+    &:has([value="3"]:checked) .scorecard-form__diamond-base-line-2,
+    &:has([value="4"]:checked) .scorecard-form__diamond-base-line-2,
+    &:has([value="3"]:checked) .scorecard-form__diamond-base-line-3,
+    &:has([value="4"]:checked) .scorecard-form__diamond-base-line-3,
+    &:has([value="4"]:checked) .scorecard-form__diamond-base-line-4 {
+      background-color: $color-accent;
+    }
+
+    .scorecard-form__diamond-base-line {
+      background-color: gray;
+      display: block;
+      width: 78px;
+      height: 10px;
+      position: absolute;
+      &-1 {
+        transform: rotate(90deg);
+        bottom: 44px;
+        left: 55px;
+      }
+      &-2 {
+        top: 0px;
+        left: 11px;
+      }
+      &-3 {
+        transform: rotate(90deg);
+        top: 45px;
+        right: 55px;
+      }
+      &-4 {
+        bottom: 0px;
+        left: 10px;
+      }
+      input {
+        opacity: 0;
+      }
+    }
+  }
+
+  &__rbis {
+    margin: 0 $space-2;
+    input {
+      width: 30px;
+    }
+  }
+
+  &__pitch-count {
+    label {
+      display: block;
+    }
+  }
+}

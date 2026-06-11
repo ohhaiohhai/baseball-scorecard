@@ -1,0 +1,48 @@
+@use "../../styles/design" as *;
+
+.scoreboard {
+  @include card;
+  display: inline-block;
+  padding: $space-4;
+  background: $color-ink;
+  color: $color-chalk;
+  border: none;
+}
+
+.grid {
+  display: grid;
+  grid-auto-flow: column;
+  gap: $space-1;
+  align-items: center;
+}
+
+.row {
+  display: contents;
+}
+
+.team {
+  padding: $space-1 $space-3;
+  font-weight: $weight-medium;
+  text-align: left;
+}
+
+.cell {
+  min-width: 2ch;
+  padding: $space-1 $space-2;
+  text-align: center;
+  font-family: $font-mono;
+  font-variant-numeric: tabular-nums;
+}
+
+.total {
+  color: $color-accent;
+  font-weight: $weight-bold;
+  border-left: $border-width solid $color-ink-soft;
+}
+
+.label {
+  color: $color-muted;
+  font-size: $text-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

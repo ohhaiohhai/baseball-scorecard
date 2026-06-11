@@ -1,0 +1,6 @@
+@use "../../../styles/design" as *;
+
+.scorecard {
+  display: flex;
+  gap: $space-6;
+}

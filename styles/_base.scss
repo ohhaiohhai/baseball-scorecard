@@ -1,0 +1,79 @@
+// =============================================================================
+// Base / reset and element defaults
+// =============================================================================
+
+@use "tokens" as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-sans;
+  font-size: $text-base;
+  line-height: $leading-base;
+  color: $color-ink;
+  background: $color-bg;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure {
+  margin: 0;
+}
+
+h1 {
+  font-size: $text-3xl;
+  line-height: $leading-tight;
+  font-weight: $weight-bold;
+}
+
+h2 {
+  font-size: $text-xl;
+  line-height: $leading-tight;
+  font-weight: $weight-bold;
+}
+
+a {
+  color: $color-accent-dark;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}

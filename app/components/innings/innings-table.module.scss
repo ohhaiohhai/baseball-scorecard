@@ -1,0 +1,13 @@
+@use "../../../styles/design" as *;
+
+.innings-table {
+  display: flex;
+  gap: $space-3;
+  &__heading {
+    text-align: center;
+  }
+}
+
+.innings-row {
+  margin: $space-2 0;
+}

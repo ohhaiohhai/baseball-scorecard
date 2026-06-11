@@ -1,0 +1,56 @@
+// =============================================================================
+// Mixins & helpers
+// =============================================================================
+
+@use "tokens" as *;
+
+// Flex helpers --------------------------------------------------------------
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin stack($gap: $space-4) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+// Surface card --------------------------------------------------------------
+@mixin card {
+  background: $color-surface;
+  border: $border-width solid $color-line;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+// Focus ring (accessibility) ------------------------------------------------
+@mixin focus-ring {
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+}
+
+// Truncate single line ------------------------------------------------------
+@mixin truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// Responsive: collapse below the container breakpoint -----------------------
+@mixin on-mobile {
+  @media (max-width: 640px) {
+    @content;
+  }
+}
