@@ -113,7 +113,7 @@ export default function ScorecardForm({ gameId, side, batter, inning, lineupSpot
             <label className={`${styles["scorecard-form__diamond-base-line"]} ${styles["scorecard-form__diamond-base-line-4"]}`}>
               <input type="radio" name="basesreached" value="4" defaultChecked={pa.basesReached === 4} />
             </label>
-            <h2 className={styles["scorecard-form__result-hero"]}>{pa.advances?.length && pa.advances[0].fielders?.length ? `${pa.advances[0].fielders?.join("-")}` : ''}{pa.result}</h2>
+            <h2 className={styles["scorecard-form__result-hero"]}>{fielders.length ? `${fielders.join("-")}` : ''}{pa.result}</h2>
           </div>
           <label><input type="radio" name="playresult" value="ꓘ" defaultChecked={pa.result === "ꓘ"} />ꓘ</label>
           <label><input type="radio" name="playresult" value="K" defaultChecked={pa.result === "K"} />K</label>

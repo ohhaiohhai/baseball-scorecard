@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import styles from "./scorecard-form.module.scss";
 
 export default function SelectPositionPlayer({
@@ -13,23 +11,12 @@ export default function SelectPositionPlayer({
   /** Lift each change up to the parent so it survives this component unmounting. */
   onChange: (sequence: number[]) => void;
 }) {
-  /** The position currently picked but not yet committed. */
-  const [current, setCurrent] = useState<number | null>(null);
-  /** True once the sequence is finalized (via "Select"). */
-  const [done, setDone] = useState(false);
+  // Each radio pick commits immediately — no "Add Next" click needed. The pick
+  // is appended to the sequence, which flows up to the parent and re-renders the
+  // hidden fielder inputs, and the running sequence shows in the <p> below.
+  const pick = (n: number) => onChange([...value, n]);
 
-  const commit = (addAnother: boolean) => {
-    if (current === null) return;
-    onChange([...value, current]);
-    setCurrent(null);
-    if (!addAnother) setDone(true);
-  };
-
-  const reset = () => {
-    onChange([]);
-    setCurrent(null);
-    setDone(false);
-  };
+  const reset = () => onChange([]);
 
   const radio = (n: number) => (
     <label key={n}>
@@ -38,9 +25,10 @@ export default function SelectPositionPlayer({
         type="radio"
         name="position-pick"
         value={n}
-        checked={current === n}
-        disabled={done}
-        onChange={() => setCurrent(n)}
+        // Controlled-but-never-checked: the <p> is the feedback, and keeping the
+        // radios unchecked lets the same position be picked twice in a row (e.g. 1-1).
+        checked={false}
+        onChange={() => pick(n)}
       />
     </label>
   );
@@ -54,29 +42,10 @@ export default function SelectPositionPlayer({
         {[7, 8, 9].map(radio)}
       </div>
 
-      {done ? (
+      {value.length > 0 && (
         <button className="btn" type="button" onClick={reset}>
           Reset
         </button>
-      ) : (
-        <>
-          <button
-            className="btn"
-            type="button"
-            disabled={current === null}
-            onClick={() => commit(false)}
-          >
-            Select
-          </button>
-          <button
-            className="btn"
-            type="button"
-            disabled={current === null}
-            onClick={() => commit(true)}
-          >
-            Select and Add
-          </button>
-        </>
       )}
     </div>
   );

@@ -145,23 +145,27 @@ export async function savePlateAppearance(
 
   const out = Boolean(_formData.get("out"));
   let outNumber: PlateAppearance["outNumber"];
-  const fielders: FieldingPosition[] = [];
   if (out) {
     const parsed = Number(_formData.get("outNumber"));
     if (!isOutNumber(parsed)) {
       throw new Error(`Invalid outNumber: ${_formData.get("outNumber")}`);
     }
     outNumber = parsed;
-    const fielder0 = Number(_formData.get("fielder0"));
-    if (isFieldingPosition(fielder0)) {
-      fielders.push(fielder0);
-      const fielder1 = Number(_formData.get("fielder1"));
-      if (isFieldingPosition(fielder1)) {
-        fielders.push(fielder1);
-        const fielder2 = Number(_formData.get("fielder2"));
-        if (isFieldingPosition(fielder2)) {
-          fielders.push(fielder2);
-        }
+  }
+
+  // Fielders are parsed independent of the "Player Out" checkbox: a fly out, an
+  // error, or a runner thrown out advancing all carry a fielding sequence even
+  // when the top-level `out` flag isn't set.
+  const fielders: FieldingPosition[] = [];
+  const fielder0 = Number(_formData.get("fielder0"));
+  if (isFieldingPosition(fielder0)) {
+    fielders.push(fielder0);
+    const fielder1 = Number(_formData.get("fielder1"));
+    if (isFieldingPosition(fielder1)) {
+      fielders.push(fielder1);
+      const fielder2 = Number(_formData.get("fielder2"));
+      if (isFieldingPosition(fielder2)) {
+        fielders.push(fielder2);
       }
     }
   }
@@ -241,6 +245,8 @@ export async function savePlateAppearance(
       reason: 'adv',
       fielders,
       base: advanceBase,
+      out: out || undefined,
+      outNumber,
     };
   }
 
@@ -255,7 +261,6 @@ export async function savePlateAppearance(
   }
 
   const inningIdx = inning - 1;
-  const spotIndex = spot - 1;
 
   const newPlateAppearance: PlateAppearance = {
     result,
@@ -272,7 +277,17 @@ export async function savePlateAppearance(
   console.log("*****************");
   console.log(newPlateAppearance.advances?.length);
 
-  game[side].innings[inningIdx].plateAppearances[spotIndex] = newPlateAppearance;
+  // Replace the existing PA for this lineup spot if present, otherwise append.
+  // Don't index by `spot - 1`: the stored array isn't aligned to lineup spot
+  // (DynamoDB compacts sparse arrays on write), so an index write would leave the
+  // old PA in place and stack a duplicate. The read path matches on `lineupSpot`.
+  const plateAppearances = game[side].innings[inningIdx].plateAppearances;
+  const existingIdx = plateAppearances.findIndex((pa) => pa.lineupSpot === spot);
+  if (existingIdx >= 0) {
+    plateAppearances[existingIdx] = newPlateAppearance;
+  } else {
+    plateAppearances.push(newPlateAppearance);
+  }
 
   const updated: Game = { ...game, updatedAt: new Date().toISOString() };
   return putGame(updated);
