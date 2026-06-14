@@ -16,8 +16,8 @@ export default function InningsTable({ innings, gameId, team }: { innings: Innin
           <ul>
             {Array(9).fill({}).map((obj, i) => (
               <li key={i} className={styles["innings-row"]}>
-                {inning.plateAppearances[i] && inning.plateAppearances[i].result ? (
-                  <Diamond editPath={`/game/${gameId}/${team}/${inning.number}/${i + 1}`} plateAppearance={inning.plateAppearances[i]} />
+                {inning.plateAppearances.filter((pA) => pA.lineupSpot === i + 1)[0]?.result ? (
+                  <Diamond editPath={`/game/${gameId}/${team}/${inning.number}/${i + 1}`} plateAppearance={inning.plateAppearances.filter((pA) => pA.lineupSpot === i + 1)[0]} />
                 ) : (
                   <Diamond editPath={`/game/${gameId}/${team}/${inning.number}/${i + 1}`} />
                 )}

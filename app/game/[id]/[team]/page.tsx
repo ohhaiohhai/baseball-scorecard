@@ -31,6 +31,9 @@ export default async function TeamRoster({
       <form action={addInning.bind(null, id, team)}>
         <button type="submit" className="btn">Add Inning</button>
       </form>
+      <pre>
+        {JSON.stringify(game, null, 2)}
+      </pre>
     </main>
   );
 }

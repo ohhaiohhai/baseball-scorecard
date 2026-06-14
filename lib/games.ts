@@ -6,7 +6,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { randomUUID } from "node:crypto";
 import { getDocClient, GAMES_TABLE_NAME } from "@/lib/dynamo";
-import type { Game, Inning, NewGameInput, PlateAppearance, PlayResult, Player } from "@/lib/types";
+import type { Game, Inning, NewGameInput, PlateAppearance, PlayResult, Player, BaseAdvance, FieldingPosition } from "@/lib/types";
 
 /** Fetch a single game by id, or null if it doesn't exist. */
 export async function getGame(id: string): Promise<Game | null> {
@@ -69,11 +69,55 @@ function isValidBaseNumber(n: number): n is NonNullable<PlateAppearance["basesRe
   return Number.isInteger(n) && n >= 0 && n <= 4;
 }
 
+function isOutNumber(n: number): n is NonNullable<PlateAppearance["outNumber"]> {
+  return Number.isInteger(n) && n >= 1 && n <= 3;
+}
+
+function isFieldingPosition(n: number): n is FieldingPosition {
+  return Number.isInteger(n) && n >= 1 && n <= 9;
+}
+
+function isAdvanceBase(n: number): n is BaseAdvance["base"] {
+  return Number.isInteger(n) && n >= 1 && n <= 4;
+}
+
 function isPlayResult(v: unknown): v is PlayResult {
   return typeof v === "string" && (PLAY_RESULTS as readonly string[]).includes(v);
 }
 
-export async function markBaseReached(
+export async function deletePlateAppearance(
+  id: string,
+  side: string,
+  inning: number,
+  lineupSpot: number
+): Promise<Game> {
+  const game = await getGame(id);
+  if (!game) {
+    throw new Error(`Game ${id} not found`);
+  }
+
+  
+  if (side !== 'away' && side !== 'home') {
+    throw new Error(`Invalid side: ${side}`);
+  }
+
+  if (!Number.isInteger(inning) || inning < 1) {
+    throw new Error(`Invalid inning: ${inning}`);
+  }
+
+  if (!isLineupSpot(lineupSpot)) {
+    throw new Error(`Invalid lineupSpot: ${lineupSpot}`);
+  }
+
+  if(game[side].innings[inning - 1]?.plateAppearances?.filter((pA) => pA.lineupSpot === lineupSpot).length) {
+    game[side].innings[inning - 1].plateAppearances = game[side].innings[inning - 1]?.plateAppearances?.filter((pA) => pA.lineupSpot !== lineupSpot)
+  }
+
+  const updated: Game = { ...game, updatedAt: new Date().toISOString() };
+  return putGame(updated);
+}
+
+export async function savePlateAppearance(
   id: string,
   _formData: FormData
 ): Promise<Game> {
@@ -97,10 +141,36 @@ export async function markBaseReached(
     throw new Error(`Invalid lineupSpot: ${_formData.get("lineupSpot")}`);
   }
 
+  const scored = Boolean(_formData.get("scored"));
+
+  const out = Boolean(_formData.get("out"));
+  let outNumber: PlateAppearance["outNumber"];
+  const fielders: FieldingPosition[] = [];
+  if (out) {
+    const parsed = Number(_formData.get("outNumber"));
+    if (!isOutNumber(parsed)) {
+      throw new Error(`Invalid outNumber: ${_formData.get("outNumber")}`);
+    }
+    outNumber = parsed;
+    const fielder0 = Number(_formData.get("fielder0"));
+    if (isFieldingPosition(fielder0)) {
+      fielders.push(fielder0);
+      const fielder1 = Number(_formData.get("fielder1"));
+      if (isFieldingPosition(fielder1)) {
+        fielders.push(fielder1);
+        const fielder2 = Number(_formData.get("fielder2"));
+        if (isFieldingPosition(fielder2)) {
+          fielders.push(fielder2);
+        }
+      }
+    }
+  }
+
   const result = _formData.get("playresult");
   if (!isPlayResult(result)) {
     throw new Error(`Invalid playresult: ${result}`);
   }
+
 
   const rbi = Number(_formData.get("rbi"));
   if (!Number.isInteger(rbi) || rbi < 0) {
@@ -109,20 +179,71 @@ export async function markBaseReached(
 
   const passedBasesReached = Number(_formData.get("basesreached"));
 
+
+  let newBaseAdvances:BaseAdvance[] = [];
+
   let basesReached = 0;
   if (!passedBasesReached) {
+    console.log("in if");
     if (result === "1B" || result === "BB" || result === "HBP") {
       basesReached = 1;
+      newBaseAdvances.push({
+        base: 1,
+        reason: "hit"
+      });
     } else if (result === "2B") {
       basesReached = 2;
+      newBaseAdvances.push({
+        base: 1,
+        reason: "hit"
+      });
+      newBaseAdvances.push({
+        base: 2,
+        reason: "hit"
+      });
     } else if (result === "3B") {
       basesReached = 3;
+      newBaseAdvances.push({
+        base: 1,
+        reason: "hit"
+      });
+      newBaseAdvances.push({
+        base: 2,
+        reason: "hit"
+      });
+      newBaseAdvances.push({
+        base: 3,
+        reason: "hit"
+      });
     } else if (result === "HR") {
       basesReached = 4;
     }
   } else {
+    console.log("in else");
     basesReached = passedBasesReached;
+    for (let i = 1; i <= basesReached; i++) {
+      if (isAdvanceBase(i)) {
+        newBaseAdvances.push({
+          base: i,
+          reason: "hit",
+        });
+      }
+    }
   }
+
+  if (["GO", "FO", "LO", "PO", "FC", "E", "SF", "SAC", "DP", "TP"].includes(result) && fielders.length > 0) {
+
+    const advanceBase = basesReached + 1;
+    if (!isAdvanceBase(advanceBase)) {
+      throw new Error(`Invalid base for advance: ${advanceBase}`);
+    }
+    newBaseAdvances[basesReached] = {
+      reason: 'adv',
+      fielders,
+      base: advanceBase,
+    };
+  }
+
 
   if(!isValidBaseNumber(basesReached)) {
     throw new Error(`Invalid number of bases: ${basesReached}`);
@@ -141,8 +262,15 @@ export async function markBaseReached(
     batterId,
     lineupSpot: spot,
     basesReached,
-    rbi
+    rbi,
+    out: out,
+    outNumber,
+    advances: newBaseAdvances,
+    scored
   };
+
+  console.log("*****************");
+  console.log(newPlateAppearance.advances?.length);
 
   game[side].innings[inningIdx].plateAppearances[spotIndex] = newPlateAppearance;
 

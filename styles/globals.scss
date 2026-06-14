@@ -37,6 +37,13 @@
     background: $color-surface-alt;
     text-decoration: none;
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    // Neutralize the hover background so a hovered-but-disabled button stays flat.
+    background: $color-surface;
+  }
 }
 
 .btn--primary {

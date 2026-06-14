@@ -2,7 +2,7 @@
 import { getGame } from "@/lib/games";
 import { notFound } from "next/navigation";
 
-import { Player } from "@/lib/types"
+import { PlateAppearance, Player } from "@/lib/types"
 
 import ScorecardForm from "@/app/components/scorecard-form/scorecard-form"
 
@@ -23,17 +23,22 @@ export default async function PlateAppearancePage({
     notFound();
   }
 
+  const spot = Number(lineupSpot);
+  if (!Number.isInteger(spot) || spot < 1 || spot > 9) {
+    notFound();
+  }
+
   let plateAppearance;
-  const plateAppearanceToCheck = game[team].innings[Number(inningNumber) - 1].plateAppearances[Number(lineupSpot) - 1];
+  const plateAppearanceToCheck = game[team].innings[Number(inningNumber) - 1].plateAppearances.filter((pA) => pA.lineupSpot === spot)[0];
   if (plateAppearanceToCheck && plateAppearanceToCheck.result) {
     plateAppearance = plateAppearanceToCheck;
   }
 
-  const batter:Player = game[team].players[Number(lineupSpot) - 1];
+  const batter:Player = game[team].players[spot - 1];
 
   return (
     <div>
-      <ScorecardForm gameId={game.id} side={team} batter={batter} inning={Number(inningNumber)} lineupSpot={Number(lineupSpot)} plateAppearance={plateAppearance} />
+      <ScorecardForm gameId={game.id} side={team} batter={batter} inning={Number(inningNumber)} lineupSpot={spot as PlateAppearance["lineupSpot"]} plateAppearance={plateAppearance} />
     </div>
   )
 }

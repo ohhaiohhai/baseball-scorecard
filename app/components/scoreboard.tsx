@@ -1,11 +1,10 @@
-import type { Game, Inning } from "@/lib/types";
+"use client";
+
+import { useGame, inningRuns, totalRuns } from "./game-store";
 import styles from "./scoreboard.module.scss";
 
-function totalRuns(innings: Inning[]): number {
-  return innings.reduce((sum, inning) => sum + (inning.runs ?? 0), 0);
-}
-
-export default function Scoreboard({ game }: { game: Game }) {
+export default function Scoreboard() {
+  const game = useGame();
   // Always show at least 9 columns, more if either team has extra innings.
   const inningCount = Math.max(
     9,
@@ -39,7 +38,7 @@ export default function Scoreboard({ game }: { game: Game }) {
               const inning = row.innings.find((inn) => inn.number === n);
               return (
                 <span key={n} className={styles.cell}>
-                  {inning?.runs ?? "·"}
+                  {inning ? inningRuns(inning) : "·"}
                 </span>
               );
             })}

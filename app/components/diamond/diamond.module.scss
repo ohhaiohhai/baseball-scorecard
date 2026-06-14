@@ -1,54 +1,75 @@
 @use "../../../styles/design" as *;
 
 .diamond-container {
-  height: 30px;
+  height: 35px;
   margin: $space-5;
   position: relative;
   text-align: center;
-  width: 30px;
+  width: 35px;
+
+  &--scored {
+    .diamond {
+      background-color: $color-accent;
+    }
+    a {
+      color: white;
+    }
+  }
 
   a {
     display: block;
     position: relative;
     width: 100%;
     z-index: 1;
+    font-weight: $weight-bold;
+    font-size: $text-sm;
   }
 
   .diamond {
-    border: 4px solid black;
+    border: 2px solid black;
     height: 30px;
     position: absolute;
     top: -2px;
     width: 30px;
     transform: rotate(45deg);
     z-index: 0;
-    &-rbi {
+    &__out-number {
+      border: 1px solid black;
+      border-radius: 4px;
+      font-size: $text-xs;
+      padding: 0 2px;
       position: absolute;
+      top: -15px;
       right: -10px;
-      bottom: -10px;
+    }
+    &__rbi {
+      font-size: $text-xs;
+      position: absolute;
+      right: -5px;
+      bottom: 0px;
     }
   }
   &.bases-reached-1 {
     .diamond {
-      border-right: 4px solid $color-accent;
+      border-right: 2px solid $color-accent;
     }
   }
   &.bases-reached-2 {
     .diamond {
-      border-right: 4px solid $color-accent;
-      border-top: 4px solid $color-accent;
+      border-right: 2px solid $color-accent;
+      border-top: 2px solid $color-accent;
     }
   }
   &.bases-reached-3 {
     .diamond {
-      border-right: 4px solid $color-accent;
-      border-top: 4px solid $color-accent;
-      border-left: 4px solid $color-accent;
+      border-right: 2px solid $color-accent;
+      border-top: 2px solid $color-accent;
+      border-left: 2px solid $color-accent;
     }
   }
   &.bases-reached-4 {
     .diamond {
-      border: 4px solid $color-accent;
+      border: 2px solid $color-accent;
     }
   }
 }

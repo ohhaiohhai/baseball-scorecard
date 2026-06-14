@@ -3,47 +3,71 @@
 .scorecard-form {
   display: flex;
   gap: $space-6;
+  margin: 0 auto;
   position: relative;
+  width: 600px;
 
-  &__hit {
+  &__results {
+    display: flex;
     label {
       display: block;
       margin: $space-3 0;
+      width: 80px;
     }
   }
 
   &__diamond-container {
-    position: relative;
+    //position: relative;
+    width: 150px;
   }
 
-  &__result {
+  &__result-hero {
     position: absolute;
-    top: 55px;
-    left: 55px;
+    left: 15px;
+    text-align: center;
+    top: 30px;
+    transform: rotate(-45deg);
+    width: 50px;
   }
 
   &__diamond {
-    border: 1px solid black;
+    box-sizing: border-box;
+    // Always reserve the 4px highlight border, in every state, so the box
+    // dimensions never change. A width change would resize the box and — because
+    // of the rotate below — move the transform origin AND the padding-box edges
+    // the labels anchor to, which is why the baselines drifted between players.
+    border: 4px solid black;
+    // Hairline outline that draws without affecting layout (box-shadow rotates
+    // with the element, unlike `outline`).
+    box-shadow: inset 0 0 0 1px black;
     height: 100px;
     margin: $space-5;
     transform: rotate(45deg);
-    width: 100px;
-    
+    width: 93px;
 
+    select {
+      display: none;
+      position: absolute;
+      transform: rotate(-135deg);
+      width: 40;
+    }
+
+    // Highlight reaching each base by COLORING the reserved border, never by
+    // changing its width.
     &.bases-reached-1 {
-      border-right: 4px solid $color-accent;
+      border-right-color: $color-accent;
     }
     &.bases-reached-2 {
-      border-right: 4px solid $color-accent;
-      border-top: 4px solid $color-accent;
+      border-right-color: $color-accent;
+      border-top-color: $color-accent;
     }
     &.bases-reached-3 {
-      border-right: 4px solid $color-accent;
-      border-top: 4px solid $color-accent;
-      border-left: 4px solid $color-accent;
+      border-right-color: $color-accent;
+      border-top-color: $color-accent;
+      border-left-color: $color-accent;
     }
     &.bases-reached-4 {
-      border: 4px solid $color-accent;
+      border-color: $color-accent;
     }
 
     // Light up each path segment cumulatively based on the base reached.
@@ -66,25 +90,30 @@
     .scorecard-form__diamond-base-line {
       background-color: gray;
       display: block;
-      width: 78px;
+      width: 62px;
       height: 10px;
       position: absolute;
       &-1 {
         transform: rotate(90deg);
-        bottom: 44px;
-        left: 55px;
+        bottom: 43px;
+        left: 48px;
+
+        select {
+          top: -35px;
+          right: 20px;
+        }
       }
       &-2 {
-        top: 0px;
+        top: 1px;
         left: 11px;
       }
       &-3 {
         transform: rotate(90deg);
-        top: 45px;
-        right: 55px;
+        top: 40px;
+        right: 48px;
       }
       &-4 {
-        bottom: 0px;
+        bottom: 1px;
         left: 10px;
       }
       input {
@@ -97,6 +126,95 @@
     margin: 0 $space-2;
     input {
       width: 30px;
+    }
+  }
+
+  &__out {
+    &-details {
+      background-color: white;
+      border: 1px solid black;
+      padding: $space-3;
+      position: absolute;
+      bottom: 50px;
+      top: 0px;
+      left: 0;
+      right: 0;
+      .full-field {
+        border: 1px solid blue;
+        height: 130px;
+        margin: 0 auto;
+        position: relative;
+        transform: rotate(45deg);
+        width: 130px;
+
+        label {
+          background-color: $color-accent;
+          border-radius: 10px;
+          color: white;
+          padding: $space-1 $space-2;
+          position: absolute;
+          transform: rotate(-45deg);
+          input {
+            display: none;
+          }
+          &:has(input:checked) {
+            background-color: black;
+          }
+        }
+        label:has(input[value="1"]) {
+          bottom: -12px;
+          right: -8px;
+        }
+        label:has(input[value="2"]) {
+          bottom: 20px;
+          right: 23px;
+        }
+        label:has(input[value="3"]) {
+          bottom: 55px;
+          right: -5px;
+        }
+        label:has(input[value="4"]) {
+          bottom: 59px;
+          right: 36px;
+        }
+        label:has(input[value="5"]) {
+          bottom: -5px;
+          right: 60px;
+        }
+        label:has(input[value="6"]) {
+          bottom: 35px;
+          right: 60px;
+        }
+        label:has(input[value="7"]) {
+          bottom: 15px;
+          left: 5px;
+        }
+        label:has(input[value="8"]) {
+          top: 2px;
+          left: 5px;
+        }
+        label:has(input[value="9"]) {
+          top: 4px;
+          right: 16px;
+        }
+      }
+      .in-field {
+        border: 1px solid red;
+        height: 70px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 70px;
+      }
+
+    }
+    fieldset {
+      display: none;
+    }
+    &:has([value="true"]:checked) {
+      fieldset {
+        display: block;
+      }
     }
   }
 

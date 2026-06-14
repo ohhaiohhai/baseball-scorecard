@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AutofillStatus from "@/app/components/autofill-status";
 import Scoreboard from "@/app/components/scoreboard";
+import { GameProvider } from "@/app/components/game-store";
 import { getGame } from "@/lib/games";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +39,9 @@ export default async function GamePage({
         />
       )}
 
-      <Scoreboard game={game} />
+      <GameProvider key={game.updatedAt} initialGame={game}>
+        <Scoreboard />
+      </GameProvider>
     </main>
   );
 }

@@ -136,9 +136,7 @@ async function structureNotes(notes) {
         content: `Extract the two teams' starting lineups and starting pitchers from these research notes. Use the batting order as given (1-9). If a jersey number is unknown, use null. Set "uncertain" to true if the notes indicate the lineup is projected rather than confirmed.\n\nNOTES:\n${notes}`,
       },
     ],
-    output_config: {
-      format: { type: "json_schema", name: "lineup_research", schema: researchSchema },
-    },
+    output_config: { format: { type: "json_schema", schema: researchSchema } },
   });
 
   const text = response.content
